@@ -1,0 +1,378 @@
+:root {
+  --bg: #0b0e14;
+  --panel: rgba(16, 23, 34, 0.86);
+  --border: rgba(0, 240, 255, 0.22);
+  --cyan: #00f0ff;
+  --amber: #ffb000;
+  --red: #ff3b30;
+  --text: #e6f1ff;
+  --muted: #8b9eb7;
+  --accent: var(--cyan);
+}
+
+body.offline-mode {
+  --accent: var(--amber);
+  --border: rgba(255, 176, 0, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: radial-gradient(circle at center, #111927 0%, #070a0f 100%);
+  color: var(--text);
+  font-family: "Consolas", "JetBrains Mono", "Segoe UI", monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.hud-shell {
+  max-width: 1380px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100vh;
+}
+
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.06);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.brand-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+
+.brand-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.header-badges {
+  display: flex;
+  gap: 10px;
+}
+
+.badge {
+  font-size: 0.76rem;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.state-badge {
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.hud-grid {
+  display: grid;
+  grid-template-columns: 310px 1fr 410px;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(12px);
+}
+
+.panel-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding-bottom: 6px;
+}
+
+.metric {
+  margin-bottom: 14px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.bar-track {
+  width: 100%;
+  height: 7px;
+  background: #141d29;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.bar-fill.danger {
+  background: var(--red);
+  box-shadow: 0 0 12px var(--red);
+}
+
+.vram-warning {
+  margin-top: 6px;
+  font-size: 0.74rem;
+  color: var(--red);
+  font-weight: 700;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 11px;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn:hover {
+  background: rgba(0, 240, 255, 0.14);
+  border-color: var(--accent);
+}
+
+.btn-primary {
+  grid-column: span 2;
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.workspace-box {
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.ws-row {
+  display: flex;
+  gap: 6px;
+}
+
+.ws-row input {
+  flex: 1;
+  background: #0d131c;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.74rem;
+}
+
+.center-panel {
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.canvas-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-banner {
+  margin-top: 14px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 0.88rem;
+  text-align: center;
+  max-width: 92%;
+}
+
+.hint-line {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.chat-panel {
+  min-height: 0;
+}
+
+.chat-feed {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.chat-bubble {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-bubble.user {
+  background: rgba(0, 240, 255, 0.09);
+  border-left: 3px solid var(--accent);
+  align-self: flex-end;
+  width: 92%;
+}
+
+.chat-bubble.atom {
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 3px solid #7f9cf5;
+  align-self: flex-start;
+  width: 95%;
+}
+
+.chat-meta {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chat-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chat-form input {
+  flex: 1;
+  background: #0d131c;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 0.82rem;
+}
+
+.chat-form .btn-primary {
+  grid-column: auto;
+  padding: 10px 16px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal {
+  width: 440px;
+  background: #101722;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+
+.modal-body select {
+  background: #0b0e14;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+.modal-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hidden {
+  display: none !important;
+}

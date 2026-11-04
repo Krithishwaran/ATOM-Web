@@ -1,0 +1,40 @@
+# =============================================================================
+# ATOM-Web - requirements (Windows 11, Python 3.11 / 3.12, Localhost Web GUI)
+# =============================================================================
+
+# --- Localhost Web GUI (FastAPI + WebSockets) ---
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+websockets>=12.0
+
+# --- Audio I/O ---
+sounddevice>=0.4.7
+numpy>=1.24,<2
+pygame>=2.5
+
+# --- Wake word (CPU) ---
+openwakeword==0.6.0
+onnxruntime>=1.17
+
+# --- STT (CPU, CTranslate2 int8) ---
+faster-whisper>=1.0.3
+
+# --- TTS ---
+edge-tts>=6.1.12
+pyttsx3>=2.90
+
+# --- Global hotkey ---
+keyboard>=0.13.5
+
+# --- Telemetry ---
+psutil>=5.9
+nvidia-ml-py>=12.535
+GPUtil>=1.4
+
+# --- LLM tiers (Module 3) ---
+groq>=0.9
+openai>=1.30
+ollama>=0.1.8
+
+# --- Config ---
+python-dotenv>=1.0

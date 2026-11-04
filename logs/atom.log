@@ -1,0 +1,163 @@
+2026-11-02 11:14:18,971 [INFO] src.core.telemetry: GPU telemetry backend: nvml
+2026-11-02 11:14:18,993 [INFO] atom-web: ATOM-Web HUD live at http://127.0.0.1:8000
+2026-11-02 11:14:19,718 [INFO] httpx2: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/revision/main "HTTP/1.1 200 OK"
+2026-11-02 11:14:20,069 [INFO] src.audio.stt: whisper loaded: base.en (cpu/int8)
+2026-11-02 11:14:21,061 [INFO] src.audio.wake_word: Downloading missing openWakeWord resource models...
+2026-11-02 11:15:34,336 [WARNING] src.audio.wake_word: no custom wake model found - using built-in 'hey_jarvis' as stand-in for 'wake up atom'
+2026-11-02 11:15:34,467 [INFO] src.audio.hotkeys: global hotkey armed: ctrl+shift+space
+2026-11-02 11:15:34,780 [INFO] src.audio.mic_router: mic stream open (device=default)
+2026-11-02 11:16:56,306 [INFO] atom-web: ATOM-Web shutdown complete
+2026-11-02 11:17:08,055 [INFO] src.core.telemetry: GPU telemetry backend: nvml
+2026-11-02 11:17:08,077 [INFO] atom-web: ATOM-Web HUD live at http://127.0.0.1:8000
+2026-11-02 11:17:08,752 [INFO] httpx2: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/revision/main "HTTP/1.1 200 OK"
+2026-11-02 11:17:09,144 [INFO] src.audio.stt: whisper loaded: base.en (cpu/int8)
+2026-11-02 11:17:10,220 [WARNING] src.audio.wake_word: no custom wake model found - using built-in 'hey_jarvis' as stand-in for 'wake up atom'
+2026-11-02 11:17:10,353 [INFO] src.audio.hotkeys: global hotkey armed: ctrl+shift+space
+2026-11-02 11:17:10,426 [INFO] src.audio.mic_router: mic stream open (device=default)
+2026-11-02 11:17:19,327 [INFO] faster_whisper: Processing audio with duration 00:01.440
+2026-11-02 11:17:19,334 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:17:19,939 [INFO] src.audio.pipeline: heard: 'What can you do?'
+2026-11-02 11:17:20,797 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-11-02 11:17:21,369 [INFO] httpx: HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+2026-11-02 11:17:21,371 [INFO] src.llm.router: Groq auto-selected model: openai/gpt-oss-20b
+2026-11-02 11:17:21,896 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:17:23,685 [INFO] src.audio.tts: edge-tts clock synced (offset=2.3s)
+2026-11-02 11:17:31,887 [WARNING] src.audio.tts: edge-tts unavailable (TimeoutError()); using offline voice
+2026-11-02 11:17:31,926 [INFO] comtypes.client._code_cache: Could not import comtypes.gen, trying to create it.
+2026-11-02 11:17:31,927 [INFO] comtypes.client._code_cache: Created comtypes.gen directory: 'C:\ATOM-Web\.venv\Lib\site-packages\comtypes\gen'
+2026-11-02 11:17:31,927 [INFO] comtypes.client._code_cache: Writing __init__.py file: 'C:\ATOM-Web\.venv\Lib\site-packages\comtypes\gen\__init__.py'
+2026-11-02 11:17:31,928 [INFO] comtypes.client._code_cache: Using writeable comtypes cache directory: 'C:\ATOM-Web\.venv\Lib\site-packages\comtypes\gen'
+2026-11-02 11:17:31,935 [INFO] comtypes.client._generate: Could not import comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4: No module named 'comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4'
+2026-11-02 11:17:31,939 [INFO] comtypes.client._generate: # Generating comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4
+2026-11-02 11:17:31,996 [INFO] comtypes.client._generate: # Generating comtypes.gen.SpeechLib
+2026-11-02 11:17:32,002 [INFO] comtypes.client._generate: Could not import comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0: No module named 'comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0'
+2026-11-02 11:17:32,003 [INFO] comtypes.client._generate: # Generating comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0
+2026-11-02 11:17:32,007 [INFO] comtypes.client._generate: # Generating comtypes.gen.stdole
+2026-11-02 11:17:48,687 [INFO] faster_whisper: Processing audio with duration 00:03.440
+2026-11-02 11:17:48,694 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:17:49,241 [INFO] src.audio.pipeline: heard: 'So you are basically telling that you are an agent.'
+2026-11-02 11:17:50,311 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:17:53,972 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:18:04,607 [INFO] faster_whisper: Processing audio with duration 00:01.920
+2026-11-02 11:18:04,610 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:18:05,129 [INFO] src.audio.pipeline: heard: 'I know run quotes.'
+2026-11-02 11:18:06,517 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:18:10,195 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:18:17,967 [INFO] faster_whisper: Processing audio with duration 00:01.120
+2026-11-02 11:18:17,969 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:18:18,492 [INFO] src.audio.pipeline: heard: 'recording.'
+2026-11-02 11:18:19,517 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:18:22,906 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:18:32,527 [INFO] faster_whisper: Processing audio with duration 00:01.840
+2026-11-02 11:18:32,531 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:18:33,052 [INFO] src.audio.pipeline: heard: 'Can you run code?'
+2026-11-02 11:18:34,042 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:18:37,184 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:18:53,408 [INFO] faster_whisper: Processing audio with duration 00:04.800
+2026-11-02 11:18:53,416 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:18:53,955 [INFO] src.audio.pipeline: heard: 'Can you create a Python code for hello print?'
+2026-11-02 11:18:55,844 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:18:55,846 [INFO] src.agent.coder: Agent wrote code file: C:\ATOM-Web\workspace\hello.py
+2026-11-02 11:18:59,082 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:19:13,567 [INFO] faster_whisper: Processing audio with duration 00:01.040
+2026-11-02 11:19:13,570 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:19:14,102 [INFO] src.audio.pipeline: heard: 'Stand down.'
+2026-11-02 11:19:17,234 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:27:24,766 [INFO] faster_whisper: Processing audio with duration 00:02.320
+2026-11-02 11:27:24,771 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:27:25,318 [INFO] src.audio.pipeline: heard: 'the program for information.'
+2026-11-02 11:27:36,335 [WARNING] src.audio.tts: edge-tts unavailable (TimeoutError()); using offline voice
+2026-11-02 11:27:42,298 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:27:42,300 [INFO] src.agent.coder: Agent wrote code file: C:\ATOM-Web\workspace\info.py
+2026-11-02 11:27:52,321 [WARNING] src.audio.tts: edge-tts unavailable (TimeoutError()); using offline voice
+2026-11-02 11:28:04,608 [INFO] faster_whisper: Processing audio with duration 00:03.360
+2026-11-02 11:28:04,614 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:28:05,142 [INFO] src.audio.pipeline: heard: 'writer program for 1 to 10.'
+2026-11-02 11:28:06,065 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:28:06,066 [INFO] src.agent.coder: Agent wrote code file: C:\ATOM-Web\workspace\count_1_to_10.py
+2026-11-02 11:28:09,204 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:28:21,488 [INFO] faster_whisper: Processing audio with duration 00:01.200
+2026-11-02 11:28:21,490 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:28:22,011 [INFO] src.audio.pipeline: heard: 'write a program.'
+2026-11-02 11:28:23,917 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:28:34,511 [WARNING] src.audio.tts: edge-tts unavailable (TimeoutError()); using offline voice
+2026-11-02 11:28:46,847 [INFO] faster_whisper: Processing audio with duration 00:00.720
+2026-11-02 11:28:46,849 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:28:49,341 [INFO] src.audio.pipeline: heard: 'Can you?'
+2026-11-02 11:28:52,193 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:28:55,536 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:29:32,908 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:29:32,958 [INFO] src.agent.coder: Agent wrote code file: C:\ATOM-Web\workspace\app.py
+2026-11-02 11:29:42,975 [WARNING] src.audio.tts: edge-tts unavailable (TimeoutError()); using offline voice
+2026-11-02 11:30:03,119 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:30:06,494 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:30:39,203 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:30:46,194 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:31:08,767 [INFO] faster_whisper: Processing audio with duration 00:01.360
+2026-11-02 11:31:08,770 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:31:09,284 [INFO] src.audio.pipeline: heard: 'Stand down.'
+2026-11-02 11:31:14,027 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:31:25,727 [INFO] faster_whisper: Processing audio with duration 00:01.280
+2026-11-02 11:31:25,731 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:31:26,234 [INFO] src.audio.pipeline: heard: 'Stand down.'
+2026-11-02 11:31:29,999 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:37:28,446 [INFO] faster_whisper: Processing audio with duration 00:00.720
+2026-11-02 11:37:28,448 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:37:34,492 [INFO] src.audio.pipeline: heard: "I'm just putting it in there."
+2026-11-02 11:37:36,647 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:37:57,807 [INFO] faster_whisper: Processing audio with duration 00:00.720
+2026-11-02 11:37:57,810 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:38:09,344 [INFO] src.audio.pipeline: heard: "I'm gonna thank you so much. I love you."
+2026-11-02 11:38:10,191 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:38:14,306 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:38:25,086 [INFO] faster_whisper: Processing audio with duration 00:01.040
+2026-11-02 11:38:25,090 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:38:29,016 [INFO] src.audio.pipeline: heard: 'bag on till from the last day.'
+2026-11-02 11:38:30,154 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:38:33,260 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 11:38:41,968 [INFO] faster_whisper: Processing audio with duration 00:00.720
+2026-11-02 11:38:41,969 [INFO] faster_whisper: VAD filter removed 00:00.720 of audio
+2026-11-02 11:38:41,971 [INFO] src.audio.pipeline: heard: ''
+2026-11-02 11:38:47,646 [INFO] faster_whisper: Processing audio with duration 00:00.720
+2026-11-02 11:38:47,649 [INFO] faster_whisper: VAD filter removed 00:00.000 of audio
+2026-11-02 11:38:48,187 [INFO] src.audio.pipeline: heard: "What's about?"
+2026-11-02 11:38:50,569 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 11:38:53,791 [WARNING] src.audio.tts: edge-tts unavailable (NoAudioReceived('No audio was received. Please verify that your parameters are correct.')); using offline voice
+2026-11-02 12:39:59,134 [INFO] atom-web: ATOM-Web shutdown complete
+2026-11-02 12:40:02,049 [INFO] src.core.telemetry: GPU telemetry backend: nvml
+2026-11-02 12:40:02,076 [INFO] atom-web: ATOM-Web HUD live at http://127.0.0.1:8000
+2026-11-02 12:40:02,867 [INFO] httpx2: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/revision/main "HTTP/1.1 200 OK"
+2026-11-02 12:40:03,296 [INFO] src.audio.stt: whisper loaded: base.en (cpu/int8)
+2026-11-02 12:40:04,575 [WARNING] src.audio.wake_word: no custom wake model found - using built-in 'hey_jarvis' as stand-in for 'wake up atom'
+2026-11-02 12:40:04,720 [INFO] src.audio.hotkeys: global hotkey armed: ctrl+shift+space
+2026-11-02 12:40:04,804 [INFO] src.audio.mic_router: mic stream open (device=default)
+2026-11-02 12:40:36,149 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-11-02 12:40:36,841 [INFO] httpx: HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+2026-11-02 12:40:36,843 [INFO] src.llm.router: Groq auto-selected model: openai/gpt-oss-20b
+2026-11-02 12:40:37,440 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-02 12:40:39,575 [INFO] src.audio.tts: edge-tts clock synced (offset=2.4s)
+2026-11-04 09:16:58,013 [INFO] src.core.telemetry: GPU telemetry backend: nvml
+2026-11-04 09:16:58,042 [INFO] atom-web: ATOM-Web HUD live at http://127.0.0.1:8000
+2026-11-04 09:16:59,098 [INFO] httpx2: HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-11-04 09:16:59,380 [INFO] httpx2: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/revision/main "HTTP/1.1 200 OK"
+2026-11-04 09:16:59,829 [INFO] src.audio.stt: whisper loaded: base.en (cpu/int8)
+2026-11-04 09:17:01,638 [WARNING] src.audio.wake_word: no custom wake model found - using built-in 'hey_jarvis' as stand-in for 'wake up atom'
+2026-11-04 09:17:01,792 [INFO] src.audio.hotkeys: global hotkey armed: ctrl+shift+space
+2026-11-04 09:17:01,919 [INFO] src.audio.mic_router: mic stream open (device=default)
+2026-11-04 09:17:02,043 [INFO] atom-web: ATOM-Web shutdown complete
+2026-11-04 09:20:05,629 [INFO] src.core.telemetry: GPU telemetry backend: nvml
+2026-11-04 09:20:05,651 [INFO] atom-web: ATOM-Web HUD live at http://127.0.0.1:8000
+2026-11-04 09:20:06,589 [INFO] httpx2: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base.en/revision/main "HTTP/1.1 200 OK"
+2026-11-04 09:20:06,922 [INFO] src.audio.stt: whisper loaded: base.en (cpu/int8)
+2026-11-04 09:20:08,028 [WARNING] src.audio.wake_word: no custom wake model found - using built-in 'hey_jarvis' as stand-in for 'wake up atom'
+2026-11-04 09:20:08,163 [INFO] src.audio.hotkeys: global hotkey armed: ctrl+shift+space
+2026-11-04 09:20:08,255 [INFO] src.audio.mic_router: mic stream open (device=default)
+2026-11-04 09:41:41,867 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-11-04 09:41:42,481 [INFO] httpx: HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+2026-11-04 09:41:42,485 [INFO] src.llm.router: Groq auto-selected model: openai/gpt-oss-20b
+2026-11-04 09:41:43,611 [INFO] httpx: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-11-04 09:41:43,621 [INFO] src.agent.coder: Agent wrote code file: C:\ATOM-Web\workspace\integral_calc.py
+2026-11-04 09:41:44,734 [INFO] src.audio.tts: edge-tts clock synced (offset=2.3s)
+2026-11-04 09:41:53,625 [WARNING] src.audio.tts: edge-tts unavailable (TimeoutError()); using offline voice
+2026-11-04 09:41:53,697 [INFO] comtypes.client._code_cache: Imported existing <module 'comtypes.gen' from 'C:\\ATOM-Web\\.venv\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2026-11-04 09:41:53,699 [INFO] comtypes.client._code_cache: Using writeable comtypes cache directory: 'C:\ATOM-Web\.venv\Lib\site-packages\comtypes\gen'

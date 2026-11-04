@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A.T.O.M. // Localhost Neural HUD</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="hud-shell">
+    <!-- Top Header Bar -->
+    <header class="hud-header">
+      <div class="brand">
+        <span class="pulse-dot" id="connDot"></span>
+        <span class="brand-title">A.T.O.M.</span>
+        <span class="brand-sub">AUTONOMOUS TACTICAL OPERATIONS MODULE // LOCALHOST HUD</span>
+      </div>
+      <div class="header-badges">
+        <span class="badge" id="tierBadge">Tier: Standby</span>
+        <span class="badge state-badge" id="stateBadge">BOOTING</span>
+      </div>
+    </header>
+
+    <!-- Main Grid: Left Telemetry | Center Visualizer Sphere | Right Live Console -->
+    <main class="hud-grid">
+      <!-- Left Column: Hardware & 3.0 GB VRAM Watchdog -->
+      <section class="panel telemetry-panel">
+        <div class="panel-title">HARDWARE TELEMETRY</div>
+
+        <div class="metric">
+          <div class="metric-row">
+            <span>CPU LOAD</span>
+            <span id="cpuVal">--%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" id="cpuBar"></div></div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-row">
+            <span>SYSTEM RAM</span>
+            <span id="ramVal">-- / -- GB</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" id="ramBar"></div></div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-row">
+            <span>RTX 2050 GPU</span>
+            <span id="gpuVal">--%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" id="gpuBar"></div></div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-row">
+            <span>VRAM WATCHDOG (3.0 GB CAP)</span>
+            <span id="vramVal">-- / -- MB</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" id="vramBar"></div></div>
+          <div class="vram-warning hidden" id="vramAlert">! VRAM BUDGET EXCEEDED (&gt;3072 MB)</div>
+        </div>
+
+        <div class="panel-title" style="margin-top: 22px;">QUICK ACTIONS</div>
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="wakeBtn" title="Shortcut: Ctrl+Shift+Space">
+            ⚡ WAKE / INTERRUPT
+          </button>
+          <button class="btn" id="standDownBtn">⏹ STAND DOWN</button>
+          <button class="btn" id="clearMemBtn">🧹 CLEAR MIND</button>
+          <button class="btn" id="settingsBtn">⚙ AUDIO DEVICES</button>
+        </div>
+
+        <div class="workspace-box">
+          <div class="panel-title">CODING AGENT WORKSPACE</div>
+          <div class="ws-row">
+            <input type="text" id="workspaceInput" spellcheck="false" />
+            <button class="btn btn-sm" id="saveWsBtn">SET</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Center Column: 60 FPS Visualizer Sphere -->
+      <section class="panel center-panel">
+        <div class="canvas-wrap">
+          <canvas id="sphereCanvas" width="380" height="380"></canvas>
+        </div>
+        <div class="status-banner" id="statusLine">Booting ATOM core…</div>
+        <div class="hint-line">
+          Say <strong>"Hey Jarvis"</strong> (or custom <em>"Wake up Atom"</em>), press <strong>Ctrl+Shift+Space</strong>, or type below.
+        </div>
+      </section>
+
+      <!-- Right Column: Live Voice & Text Transcript + Prompt Input -->
+      <section class="panel chat-panel">
+        <div class="panel-title">NEURAL TRANSCRIPT &amp; COMMAND STREAM</div>
+        <div class="chat-feed" id="chatFeed"></div>
+        <form class="chat-form" id="chatForm">
+          <input
+            type="text"
+            id="chatInput"
+            placeholder="Type a command or coding prompt to ATOM..."
+            autocomplete="off"
+          />
+          <button type="submit" class="btn btn-primary">SEND</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- Audio Settings Modal -->
+  <div class="modal-backdrop hidden" id="settingsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span>AUDIO I/O CONFIGURATION</span>
+        <button class="close-btn" id="closeModalBtn">✕</button>
+      </div>
+      <div class="modal-body">
+        <label>Microphone (Input Device)</label>
+        <select id="inputSelect"></select>
+
+        <label>Speakers / Headphones (Output Device)</label>
+        <select id="outputSelect"></select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="applyDevicesBtn">APPLY LIVE</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
