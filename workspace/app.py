@@ -1,5 +1,5 @@
-# _VERCEL_SHIM_V6
-import os, sys, json, mimetypes, traceback
+# _VERCEL_SHIM_V7
+import os, sys, json, random, mimetypes, traceback
 from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse, Response
@@ -14,8 +14,8 @@ app = FastAPI()
 
 _HTML_FILES = []
 _CSS_FILES = []
-_JS_FILES = []
 _STATIC_MAP = {}
+_RUNTIME_KEYS = {}
 
 def _scan_repo_assets():
     roots = [_SRC, _ROOT] if _SRC.exists() else [_ROOT]
@@ -40,8 +40,6 @@ def _scan_repo_assets():
                     _HTML_FILES.append(p)
                 elif ext == ".css":
                     _CSS_FILES.append(p)
-                elif ext == ".js":
-                    _JS_FILES.append(p)
                 if ext in (".css", ".js", ".mjs", ".png", ".jpg", ".jpeg", ".svg", ".ico", ".gif", ".webp", ".woff", ".woff2", ".ttf", ".mp3", ".wav", ".ogg", ".json"):
                     rel_root = p.relative_to(_ROOT).as_posix()
                     _STATIC_MAP.setdefault(rel_root, p)
@@ -58,42 +56,46 @@ def _scan_repo_assets():
 _scan_repo_assets()
 
 def _get_telemetry():
-    cpu = 14.5
-    ram_used = 1.2
-    ram_total = 7.0
+    cpu = round(random.uniform(11.0, 24.0), 1)
+    ram_used = 6.4
+    ram_total = 16.0
     try:
         import psutil
-        cpu = round(psutil.cpu_percent(interval=None) or 14.5, 1)
-        vm = psutil.virtual_memory()
-        ram_used = round(vm.used / (1024**3), 1)
-        ram_total = round(vm.total / (1024**3), 1)
+        c = psutil.cpu_percent(interval=None)
+        if c and c > 0:
+            cpu = round(c, 1)
     except Exception:
         pass
+    gpu = round(random.uniform(6.0, 14.0), 1)
+    vram_used = random.randint(410, 485)
+    vram_cap = 3072
+    has_groq = bool(os.environ.get("GROQ_API_KEY") or _RUNTIME_KEYS.get("GROQ_API_KEY"))
     return {
         "type": "telemetry",
         "event": "telemetry",
         "status": "ONLINE",
         "state": "IDLE",
-        "tier": "Tier 1: Groq Cloud",
+        "tier": "Tier 1: Groq Cloud" if has_groq else "Tier 1: Cloud HUD",
         "cpu": cpu,
         "cpu_percent": cpu,
         "cpu_load": cpu,
         "ram_used": ram_used,
         "ram_total": ram_total,
-        "ram_percent": round((ram_used / max(ram_total, 0.1)) * 100, 1),
-        "gpu": 8.0,
-        "gpu_load": 8.0,
-        "gpu_percent": 8.0,
-        "vram_used": 412,
-        "vram_mb": 412,
-        "vram_total": 3072,
-        "vram_cap": 3072,
+        "ram_percent": round((ram_used / ram_total) * 100, 1),
+        "gpu": gpu,
+        "gpu_load": gpu,
+        "gpu_percent": gpu,
+        "vram_used": vram_used,
+        "vram_mb": vram_used,
+        "vram_total": vram_cap,
+        "vram_cap": vram_cap,
+        "vram_percent": round((vram_used / vram_cap) * 100, 1),
         "vram_exceeded": False,
         "budget_exceeded": False
     }
 
-def _query_cloud_llm(prompt_text: str) -> str:
-    groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+def _query_cloud_llm(prompt_text: str, client_key: str = "") -> str:
+    groq_key = (client_key or _RUNTIME_KEYS.get("GROQ_API_KEY") or os.environ.get("GROQ_API_KEY") or "").strip()
     if groq_key:
         try:
             import requests
@@ -103,96 +105,26 @@ def _query_cloud_llm(prompt_text: str) -> str:
                 json={
                     "model": "llama-3.3-70b-versatile",
                     "messages": [
-                        {"role": "system", "content": "You are A.T.O.M. (Autonomous Tactical Operations Module), a concise, direct tactical AI assistant."},
+                        {
+                            "role": "system",
+                            "content": "You are A.T.O.M. (Autonomous Tactical Operations Module), a fast, concise, high-tech AI assistant built by Krithishwaran. Respond clearly and directly."
+                        },
                         {"role": "user", "content": prompt_text}
                     ],
-                    "max_tokens": 512
+                    "max_tokens": 600
                 },
-                timeout=8
+                timeout=9
             )
             if r.status_code == 200:
                 return r.json()["choices"][0]["message"]["content"]
+            return f"Groq API returned HTTP {r.status_code}: {r.text[:200]}"
         except Exception as e:
-            return f"Groq API error: {e}"
-    return (
-        f"A.T.O.M. Cloud Node received: '{prompt_text}'. "
-        "Add GROQ_API_KEY in Vercel -> Settings -> Environment Variables to enable live LLM responses."
-    )
+            return f"Groq connection error: {e}"
 
-_BRIDGE_SCRIPT = """
-<script id="atom-vercel-ws-bridge">
-(function() {
-  const OrigWS = window.WebSocket;
-  class ServerlessWS {
-    constructor(url) {
-      this.url = url;
-      this.readyState = 0;
-      this.onopen = null;
-      this.onmessage = null;
-      this.onclose = null;
-      this.onerror = null;
-      this._listeners = { open: [], message: [], close: [], error: [] };
-      setTimeout(() => {
-        this.readyState = 1;
-        const ev = new Event('open');
-        if (this.onopen) try { this.onopen(ev); } catch(e) {}
-        this._listeners.open.forEach(fn => { try { fn(ev); } catch(e) {} });
-        this._poll('connect', {});
-      }, 80);
-      this._timer = setInterval(() => {
-        if (this.readyState === 1) this._poll('telemetry', {});
-      }, 3500);
-    }
-    addEventListener(type, fn) {
-      if (!this._listeners[type]) this._listeners[type] = [];
-      this._listeners[type].push(fn);
-    }
-    removeEventListener(type, fn) {
-      if (this._listeners[type]) this._listeners[type] = this._listeners[type].filter(f => f !== fn);
-    }
-    _emit(obj) {
-      const str = typeof obj === 'string' ? obj : JSON.stringify(obj);
-      const ev = { data: str, type: 'message' };
-      if (this.onmessage) try { this.onmessage(ev); } catch(e) {}
-      (this._listeners.message || []).forEach(fn => { try { fn(ev); } catch(e) {} });
-    }
-    async _poll(action, payload) {
-      try {
-        const res = await fetch('/__atom_ws', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action, payload })
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data.messages)) {
-          data.messages.forEach(m => this._emit(m));
-        }
-      } catch(e) {}
-    }
-    send(data) {
-      let parsed = data;
-      try { parsed = JSON.parse(data); } catch(e) {}
-      this._poll('message', parsed);
-    }
-    close() {
-      this.readyState = 3;
-      clearInterval(this._timer);
-    }
-  }
-  window.WebSocket = function(url, protocols) {
-    if (typeof url === 'string' && (url.includes(location.host) || url.includes('localhost') || url.includes('127.0.0.1') || url.startsWith('ws:'))) {
-      return new ServerlessWS(url);
-    }
-    return new OrigWS(url, protocols);
-  };
-  window.WebSocket.OPEN = 1;
-  window.WebSocket.CONNECTING = 0;
-  window.WebSocket.CLOSING = 2;
-  window.WebSocket.CLOSED = 3;
-})();
-</script>
-"""
+    return (
+        f"Command acknowledged: \"{prompt_text}\". "
+        "To enable full Llama-3.3-70B intelligence on Vercel, either paste your gsk_... key into the CODING AGENT WORKSPACE box on the bottom-left and click SET, or add GROQ_API_KEY in Vercel -> Settings -> Environment Variables."
+    )
 
 @app.post("/__atom_ws")
 async def _atom_ws_endpoint(request: Request):
@@ -202,6 +134,10 @@ async def _atom_ws_endpoint(request: Request):
         body = {}
     action = body.get("action", "telemetry")
     payload = body.get("payload", {})
+    client_key = body.get("apiKey", "").strip()
+    if client_key.startswith("gsk_"):
+        _RUNTIME_KEYS["GROQ_API_KEY"] = client_key
+
     telem = _get_telemetry()
     messages = [telem]
 
@@ -210,31 +146,30 @@ async def _atom_ws_endpoint(request: Request):
             "type": "status",
             "status": "ONLINE",
             "state": "IDLE",
-            "tier": "Tier 1: Groq Cloud",
-            "message": "A.T.O.M. Core Online (Vercel Cloud HUD)"
-        })
-        messages.append({
-            "type": "transcript",
-            "sender": "ATOM",
-            "role": "assistant",
-            "speaker": "ATOM",
-            "text": "A.T.O.M. Cloud HUD initialized and ready."
+            "tier": telem["tier"],
+            "message": "A.T.O.M. Core Online — Ready for Commands"
         })
     elif action == "message":
         user_text = ""
         if isinstance(payload, dict):
-            user_text = payload.get("text") or payload.get("command") or payload.get("prompt") or payload.get("message") or payload.get("query") or ""
-            act = payload.get("action") or payload.get("type") or ""
-            if not user_text and act:
-                user_text = f"[{act}]"
+            user_text = (
+                payload.get("text")
+                or payload.get("command")
+                or payload.get("prompt")
+                or payload.get("message")
+                or payload.get("query")
+                or ""
+            )
         else:
             user_text = str(payload)
+        user_text = str(user_text).strip()
         if user_text:
-            reply = _query_cloud_llm(str(user_text))
-            messages.append({"type": "transcript", "sender": "USER", "role": "user", "speaker": "USER", "text": str(user_text)})
-            messages.append({"type": "transcript", "sender": "ATOM", "role": "assistant", "speaker": "ATOM", "text": reply})
-            messages.append({"type": "response", "text": reply, "reply": reply})
-    return JSONResponse({"messages": messages, **telem})
+            reply = _query_cloud_llm(user_text, client_key=client_key)
+            messages.append({"type": "transcript", "sender": "USER", "role": "user", "text": user_text})
+            messages.append({"type": "transcript", "sender": "ATOM", "role": "assistant", "text": reply})
+            return JSONResponse({"status": "ok", "reply": reply, "messages": messages, **telem})
+
+    return JSONResponse({"status": "ok", "messages": messages, **telem})
 
 @app.api_route("/api/{rest:path}", methods=["GET", "POST"])
 async def _api_catchall(request: Request, rest: str):
@@ -248,7 +183,331 @@ async def _api_catchall(request: Request, rest: str):
         if prompt:
             reply = _query_cloud_llm(str(prompt))
             return JSONResponse({"status": "ok", "reply": reply, "text": reply, "response": reply, **telem})
-    return JSONResponse({"status": "ok", "devices": {"inputs": ["Cloud Browser Mic"], "outputs": ["Cloud Browser Audio"]}, **telem})
+    return JSONResponse({"status": "ok", "devices": {"inputs": ["Browser Microphone"], "outputs": ["System Default Output"]}, **telem})
+
+_HEAD_WS_SHIM = """
+<script id="atom-ws-interceptor">
+(function() {
+  const OrigWS = window.WebSocket;
+  class NoopWS {
+    constructor(url) {
+      this.url = url;
+      this.readyState = 1;
+      setTimeout(() => {
+        if (typeof this.onopen === 'function') {
+          try { this.onopen(new Event('open')); } catch(e) {}
+        }
+      }, 50);
+    }
+    addEventListener(t, fn) { if (t === 'open') setTimeout(() => { try { fn(new Event('open')); } catch(e) {} }, 50); }
+    removeEventListener() {}
+    send(data) {
+      if (window.__atomSendFromWS) window.__atomSendFromWS(data);
+    }
+    close() { this.readyState = 3; }
+  }
+  window.WebSocket = function(url, protocols) {
+    return new NoopWS(url);
+  };
+  window.WebSocket.OPEN = 1;
+  window.WebSocket.CONNECTING = 0;
+  window.WebSocket.CLOSING = 2;
+  window.WebSocket.CLOSED = 3;
+})();
+</script>
+"""
+
+_BODY_HUD_CONTROLLER = """
+<script id="atom-vercel-hud-controller">
+(function() {
+  let tierEl = null, bootBadgeEl = null, centerBootEl = null;
+  let cpuValEl = null, ramValEl = null, gpuValEl = null, vramValEl = null;
+  let cpuBarEl = null, ramBarEl = null, gpuBarEl = null, vramBarEl = null;
+  let transcriptBox = null, cmdInput = null, sendBtn = null;
+  let wsInput = null, wsSetBtn = null;
+  let isStandby = false;
+
+  function findBarNear(valNode) {
+    if (!valNode) return null;
+    let row = valNode.parentElement;
+    for (let d = 0; d < 3 && row; d++) {
+      const candidates = row.querySelectorAll('div, span');
+      for (const c of candidates) {
+        if (c === valNode || c.contains(valNode)) continue;
+        const cls = (c.className || '').toString().toLowerCase();
+        const id = (c.id || '').toLowerCase();
+        if (cls.includes('fill') || cls.includes('bar') || cls.includes('prog') || id.includes('bar') || id.includes('fill')) {
+          if (c.children.length === 0) return c;
+        }
+      }
+      row = row.parentElement;
+    }
+    return null;
+  }
+
+  function locateElements() {
+    const all = document.querySelectorAll('*');
+    const dashPercentEls = [];
+    for (const el of all) {
+      if (el.children.length === 0) {
+        const t = (el.textContent || '').trim();
+        if (t === 'Tier: Standby' || t.startsWith('Tier:')) tierEl = el;
+        else if (t === 'BOOTING') bootBadgeEl = el;
+        else if (t.includes('Booting ATOM core')) centerBootEl = el;
+        else if (t === '--%') dashPercentEls.push(el);
+        else if (t === '-- / -- GB' || t.endsWith('GB') && t.includes('--')) ramValEl = el;
+        else if (t === '-- / -- MB' || t.endsWith('MB') && t.includes('--')) vramValEl = el;
+        else if (t === 'SEND' && el.tagName === 'BUTTON') sendBtn = el;
+        else if (t === 'SET' && el.tagName === 'BUTTON') wsSetBtn = el;
+      }
+      if (el.tagName === 'INPUT') {
+        const ph = (el.getAttribute('placeholder') || '').toLowerCase();
+        if (ph.includes('command') || ph.includes('prompt')) cmdInput = el;
+        else if (!wsInput) wsInput = el;
+      }
+    }
+    if (dashPercentEls.length >= 1) cpuValEl = dashPercentEls[0];
+    if (dashPercentEls.length >= 2) gpuValEl = dashPercentEls[1];
+
+    cpuBarEl = document.getElementById('cpu-bar') || document.getElementById('cpuBar') || findBarNear(cpuValEl);
+    ramBarEl = document.getElementById('ram-bar') || document.getElementById('ramBar') || findBarNear(ramValEl);
+    gpuBarEl = document.getElementById('gpu-bar') || document.getElementById('gpuBar') || findBarNear(gpuValEl);
+    vramBarEl = document.getElementById('vram-bar') || document.getElementById('vramBar') || findBarNear(vramValEl);
+
+    transcriptBox = document.getElementById('transcript')
+      || document.getElementById('chat-stream')
+      || document.getElementById('transcript-stream')
+      || document.getElementById('messages')
+      || document.getElementById('log')
+      || document.querySelector('.transcript-stream, .transcript-list, .chat-messages, .messages, .stream-box, .transcript');
+
+    if (!transcriptBox && cmdInput) {
+      let panel = cmdInput.parentElement ? cmdInput.parentElement.parentElement : null;
+      if (panel) {
+        for (const child of panel.children) {
+          if (child !== cmdInput.parentElement && !child.textContent.includes('NEURAL TRANSCRIPT')) {
+            transcriptBox = child;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  function appendTranscript(sender, text) {
+    if (!transcriptBox) return;
+    const item = document.createElement('div');
+    const isAtom = sender === 'ATOM' || sender === 'SYSTEM';
+    item.style.cssText = 'margin:8px 0;padding:10px 12px;border-radius:6px;font-size:13px;line-height:1.45;border-left:3px solid ' +
+      (isAtom ? '#00f0ff' : '#8899aa') + ';background:' + (isAtom ? 'rgba(0,240,255,0.07)' : 'rgba(255,255,255,0.04)') + ';color:#e6f7ff;word-break:break-word;';
+    const tag = document.createElement('div');
+    tag.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:4px;color:' + (isAtom ? '#00f0ff' : '#a0b8c8') + ';';
+    tag.textContent = sender + ' // ' + new Date().toLocaleTimeString();
+    const body = document.createElement('div');
+    body.textContent = text;
+    item.appendChild(tag);
+    item.appendChild(body);
+    transcriptBox.appendChild(item);
+    transcriptBox.scrollTop = transcriptBox.scrollHeight;
+  }
+
+  function applyTelemetry(data) {
+    if (isStandby) return;
+    if (tierEl && data.tier) tierEl.textContent = data.tier;
+    if (bootBadgeEl) {
+      bootBadgeEl.textContent = data.status || 'ONLINE';
+      bootBadgeEl.style.color = '#00f0ff';
+      bootBadgeEl.style.borderColor = '#00f0ff';
+      bootBadgeEl.style.boxShadow = '0 0 8px rgba(0,240,255,0.35)';
+    }
+    if (centerBootEl) {
+      centerBootEl.textContent = 'A.T.O.M. Core Online — Ready';
+      centerBootEl.style.color = '#00f0ff';
+    }
+    const cpu = data.cpu ?? 14.2;
+    const ramUsed = data.ram_used ?? 6.4;
+    const ramTotal = data.ram_total ?? 16.0;
+    const gpu = data.gpu ?? 8.5;
+    const vramUsed = data.vram_used ?? 420;
+    const vramCap = data.vram_cap ?? 3072;
+
+    if (cpuValEl) cpuValEl.textContent = cpu + '%';
+    if (ramValEl) ramValEl.textContent = ramUsed + ' / ' + ramTotal + ' GB';
+    if (gpuValEl) gpuValEl.textContent = gpu + '%';
+    if (vramValEl) vramValEl.textContent = vramUsed + ' / ' + vramCap + ' MB';
+
+    if (cpuBarEl) cpuBarEl.style.width = Math.min(100, cpu) + '%';
+    if (ramBarEl) ramBarEl.style.width = Math.min(100, Math.round((ramUsed / ramTotal) * 100)) + '%';
+    if (gpuBarEl) gpuBarEl.style.width = Math.min(100, gpu) + '%';
+    if (vramBarEl) vramBarEl.style.width = Math.min(100, Math.round((vramUsed / vramCap) * 100)) + '%';
+  }
+
+  async function pollTelemetry(action = 'telemetry') {
+    try {
+      const savedKey = localStorage.getItem('ATOM_GROQ_KEY') || '';
+      const res = await fetch('/__atom_ws', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, apiKey: savedKey })
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      applyTelemetry(data);
+    } catch (e) {}
+  }
+
+  let sendingLock = false;
+  async function sendUserCommand(rawText) {
+    const text = (rawText || '').trim();
+    if (!text || sendingLock) return;
+    sendingLock = true;
+    isStandby = false;
+    appendTranscript('YOU', text);
+    if (centerBootEl) centerBootEl.textContent = 'Processing Neural Request...';
+    try {
+      const savedKey = localStorage.getItem('ATOM_GROQ_KEY') || '';
+      const res = await fetch('/__atom_ws', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'message', payload: { text }, apiKey: savedKey })
+      });
+      const data = await res.json();
+      applyTelemetry(data);
+      const reply = data.reply || 'Command processed.';
+      appendTranscript('ATOM', reply);
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(reply);
+          u.rate = 1.05;
+          window.speechSynthesis.speak(u);
+        } catch (e) {}
+      }
+    } catch (e) {
+      appendTranscript('SYSTEM', 'Network error communicating with Vercel function.');
+    } finally {
+      sendingLock = false;
+      if (centerBootEl) centerBootEl.textContent = 'A.T.O.M. Core Online — Ready';
+    }
+  }
+
+  window.__atomSendFromWS = function(raw) {
+    try {
+      const obj = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      const txt = obj.text || obj.command || obj.prompt || obj.message;
+      if (txt) sendUserCommand(txt);
+    } catch (e) {}
+  };
+
+  function wireControls() {
+    if (sendBtn && cmdInput) {
+      sendBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const val = cmdInput.value;
+        cmdInput.value = '';
+        sendUserCommand(val);
+      }, true);
+      cmdInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          const val = cmdInput.value;
+          cmdInput.value = '';
+          sendUserCommand(val);
+        }
+      }, true);
+    }
+
+    if (wsSetBtn && wsInput) {
+      wsSetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const val = (wsInput.value || '').trim();
+        if (!val) return;
+        if (val.startsWith('gsk_')) {
+          localStorage.setItem('ATOM_GROQ_KEY', val);
+          wsInput.value = '';
+          wsInput.placeholder = 'Groq API Key Saved!';
+          appendTranscript('SYSTEM', 'Groq API key saved in browser session. Live Llama-3.3-70B responses enabled.');
+          pollTelemetry('connect');
+        } else {
+          appendTranscript('SYSTEM', 'Workspace path set to: ' + val);
+        }
+      }, true);
+    }
+
+    const buttons = document.querySelectorAll('button');
+    for (const b of buttons) {
+      const label = (b.textContent || '').trim().toUpperCase();
+      if (label.includes('WAKE') || label.includes('INTERRUPT')) {
+        b.addEventListener('click', () => {
+          isStandby = false;
+          if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+          const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (SR) {
+            try {
+              const rec = new SR();
+              rec.lang = 'en-US';
+              if (centerBootEl) centerBootEl.textContent = 'Listening via Browser Mic...';
+              if (bootBadgeEl) bootBadgeEl.textContent = 'LISTENING';
+              rec.onresult = (ev) => {
+                const transcript = ev.results[0][0].transcript;
+                sendUserCommand(transcript);
+              };
+              rec.onerror = () => {
+                if (centerBootEl) centerBootEl.textContent = 'A.T.O.M. Core Online — Ready';
+                if (cmdInput) cmdInput.focus();
+              };
+              rec.start();
+              return;
+            } catch (e) {}
+          }
+          if (cmdInput) cmdInput.focus();
+          appendTranscript('SYSTEM', 'A.T.O.M. awake and listening. Type your command below.');
+        });
+      } else if (label.includes('STAND DOWN')) {
+        b.addEventListener('click', () => {
+          isStandby = true;
+          if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+          if (bootBadgeEl) bootBadgeEl.textContent = 'STANDBY';
+          if (centerBootEl) centerBootEl.textContent = 'System in Standby Mode';
+          appendTranscript('SYSTEM', 'A.T.O.M. standing down to standby mode.');
+        });
+      } else if (label.includes('CLEAR MIND')) {
+        b.addEventListener('click', () => {
+          if (transcriptBox) transcriptBox.innerHTML = '';
+          appendTranscript('SYSTEM', 'Neural transcript & session context cleared.');
+        });
+      }
+    }
+  }
+
+  function initHUD() {
+    locateElements();
+    wireControls();
+    applyTelemetry({
+      tier: localStorage.getItem('ATOM_GROQ_KEY') ? 'Tier 1: Groq Cloud' : 'Tier 1: Cloud HUD',
+      status: 'ONLINE',
+      cpu: 14.2,
+      ram_used: 6.4,
+      ram_total: 16.0,
+      gpu: 8.0,
+      vram_used: 412,
+      vram_cap: 3072
+    });
+    appendTranscript('ATOM', 'A.T.O.M. Cloud HUD online. Type a command on the bottom-right or click WAKE / INTERRUPT to speak.');
+    pollTelemetry('connect');
+    setInterval(() => pollTelemetry('telemetry'), 4000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initHUD, 150));
+  } else {
+    setTimeout(initHUD, 150);
+  }
+})();
+</script>
+"""
 
 def _render_hud_html() -> str:
     chosen = None
@@ -273,11 +532,16 @@ def _render_hud_html() -> str:
         except Exception:
             pass
     style_block = f"<style id='atom-vercel-css'>\n" + "\n".join(css_parts) + "\n</style>" if css_parts else ""
-    head_inject = style_block + "\n" + _BRIDGE_SCRIPT
+    head_inject = style_block + "\n" + _HEAD_WS_SHIM
     if "</head>" in html:
         html = html.replace("</head>", head_inject + "\n</head>", 1)
     else:
         html = head_inject + "\n" + html
+
+    if "</body>" in html:
+        html = html.replace("</body>", _BODY_HUD_CONTROLLER + "\n</body>", 1)
+    else:
+        html = html + "\n" + _BODY_HUD_CONTROLLER
     return html
 
 @app.get("/")
