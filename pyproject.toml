@@ -1,0 +1,2 @@
+[tool.vercel]
+entrypoint = "workspace.app:app"
