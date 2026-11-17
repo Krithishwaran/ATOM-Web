@@ -1,10 +1,9 @@
-# _VERCEL_SHIM_V2
+# _VERCEL_SHIM_V3
 import os, sys, traceback, importlib.abc, importlib.machinery
 from pathlib import Path
 from unittest.mock import MagicMock
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
-import fastapi.staticfiles, starlette.staticfiles, fastapi.templating
 
 _DIR = Path(__file__).resolve().parent
 _ROOT = _DIR.parent
@@ -53,44 +52,27 @@ def _safe_makedirs(name, mode=0o777, exist_ok=False):
         return None
 os.makedirs = _safe_makedirs
 
-def _resolve_dir(d):
-    if not d:
-        return d
-    p = Path(d)
-    for cand in (p, _DIR / p, _ROOT / p, _DIR / p.name, _ROOT / p.name):
-        if cand.exists():
-            return str(cand)
-    return str(_DIR / p.name)
-
-_OrigStatic = fastapi.staticfiles.StaticFiles
-class _SafeStatic(_OrigStatic):
-    def __init__(self, *args, **kwargs):
-        if "directory" in kwargs:
-            kwargs["directory"] = _resolve_dir(kwargs["directory"])
-        elif args:
-            args = (_resolve_dir(args[0]),) + args[1:]
-        kwargs["check_dir"] = False
-        super().__init__(*args, **kwargs)
-
-fastapi.staticfiles.StaticFiles = _SafeStatic
-starlette.staticfiles.StaticFiles = _SafeStatic
-
-_OrigTemplates = fastapi.templating.Jinja2Templates
-class _SafeTemplates(_OrigTemplates):
-    def __init__(self, *args, **kwargs):
-        if "directory" in kwargs:
-            kwargs["directory"] = _resolve_dir(kwargs["directory"])
-        elif args:
-            args = (_resolve_dir(args[0]),) + args[1:]
-        super().__init__(*args, **kwargs)
-
-fastapi.templating.Jinja2Templates = _SafeTemplates
-
 app = FastAPI()
 
 try:
+    os.chdir(_DIR)
     import workspace._atom_app as _real_mod
-    app = _real_mod.app
+    _target = getattr(_real_mod, "app", None)
+    from flask import Flask
+    if isinstance(_target, Flask):
+        for _tdir in (_DIR / "templates", _ROOT / "templates", _ROOT / "src" / "templates"):
+            if _tdir.exists():
+                _target.template_folder = str(_tdir)
+                break
+        for _sdir in (_DIR / "static", _ROOT / "static", _ROOT / "src" / "static"):
+            if _sdir.exists():
+                _target.static_folder = str(_sdir)
+                break
+        from a2wsgi import WSGIMiddleware
+        app = FastAPI()
+        app.mount("/", WSGIMiddleware(_target))
+    elif _target is not None:
+        app = _target
 except BaseException:
     _tb = traceback.format_exc()
     print(_tb, file=sys.stderr)
